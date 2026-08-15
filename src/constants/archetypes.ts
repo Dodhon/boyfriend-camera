@@ -7,7 +7,7 @@ export const SHOT_ARCHETYPES: Record<ShotArchetypeId, ShotArchetype> = {
     subtitle: 'Elongate legs & show the whole fit',
     badge: 'OOTD',
     iconName: 'User',
-    targetPitchDeg: 5.5,
+    targetPitchDeg: 5.5, // Tilted slightly up towards sky
     pitchToleranceDeg: 3.5,
     targetRollDeg: 0.0,
     rollToleranceDeg: 2.0,
@@ -16,6 +16,9 @@ export const SHOT_ARCHETYPES: Record<ShotArchetypeId, ShotArchetype> = {
     headroomPercentage: 0.12,
     feetMarginPercentage: 0.06,
     defaultScale: 0.80,
+    // Aesthetic full-body fashion street style photo
+    sampleImageUrl:
+      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop',
     proTip: 'Hold phone at belly-button level and tilt the top back slightly towards you.',
   },
   'portrait-half': {
@@ -33,24 +36,10 @@ export const SHOT_ARCHETYPES: Record<ShotArchetypeId, ShotArchetype> = {
     headroomPercentage: 0.15,
     feetMarginPercentage: 0.35,
     defaultScale: 0.65,
+    // Aesthetic half-body outdoor portrait
+    sampleImageUrl:
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop',
     proTip: 'Align her eyes with the upper dashed line. Crop at mid-thigh, never knees.',
-  },
-  'cafe-sitting': {
-    id: 'cafe-sitting',
-    title: 'Cafe / Table Sitting',
-    subtitle: 'Table level perspective with coffee context',
-    badge: 'CAFE',
-    iconName: 'Coffee',
-    targetPitchDeg: -3.5,
-    pitchToleranceDeg: 3.0,
-    targetRollDeg: 0.0,
-    rollToleranceDeg: 2.0,
-    heightHint: 'Table / Seated Level',
-    lensPreference: '1x',
-    headroomPercentage: 0.14,
-    feetMarginPercentage: 0.25,
-    defaultScale: 0.60,
-    proTip: 'Bring phone down to table surface level. Never take this photo standing above her.',
   },
   'aesthetic-wide': {
     id: 'aesthetic-wide',
@@ -62,46 +51,15 @@ export const SHOT_ARCHETYPES: Record<ShotArchetypeId, ShotArchetype> = {
     pitchToleranceDeg: 2.5,
     targetRollDeg: 0.0,
     rollToleranceDeg: 1.5,
-    heightHint: 'Chest / Eye Height',
+    heightHint: 'Eye Level (Level Horizon)',
     lensPreference: '0.5x',
     headroomPercentage: 0.22,
     feetMarginPercentage: 0.12,
     defaultScale: 0.45,
+    // Aesthetic travel/scenery photo
+    sampleImageUrl:
+      'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1000&auto=format&fit=crop',
     proTip: 'Strictly level horizon is critical. Position her along the golden third vertical line.',
-  },
-  'golden-hour': {
-    id: 'golden-hour',
-    title: 'Golden Hour Glow',
-    subtitle: 'Backlit rim light & flare control',
-    badge: 'GLOW',
-    iconName: 'Sun',
-    targetPitchDeg: 3.0,
-    pitchToleranceDeg: 3.0,
-    targetRollDeg: 0.0,
-    rollToleranceDeg: 2.0,
-    heightHint: 'Chest / Eye Height',
-    lensPreference: '1x',
-    headroomPercentage: 0.15,
-    feetMarginPercentage: 0.15,
-    defaultScale: 0.70,
-    proTip: 'Position the sun directly behind her hair or shoulder for rim light without flareout.',
-  },
-  'y2k-high': {
-    id: 'y2k-high',
-    title: '0.5x High-Angle (Y2K)',
-    subtitle: 'Viral Pinterest look from above',
-    badge: '0.5x Y2K',
-    iconName: 'Sparkles',
-    targetPitchDeg: -22.0, // Tilted down looking from above
-    pitchToleranceDeg: 6.0,
-    targetRollDeg: 0.0,
-    rollToleranceDeg: 3.0,
-    heightHint: 'High / Above Head',
-    lensPreference: '0.5x',
-    headroomPercentage: 0.08,
-    feetMarginPercentage: 0.05,
-    defaultScale: 0.85,
-    proTip: 'Hold phone 1-2 feet above head level, angled down. Have her look up towards the lens.',
   },
 };
 

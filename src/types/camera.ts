@@ -1,10 +1,7 @@
 export type ShotArchetypeId =
   | 'ootd-full'
   | 'portrait-half'
-  | 'cafe-sitting'
-  | 'aesthetic-wide'
-  | 'golden-hour'
-  | 'y2k-high';
+  | 'aesthetic-wide';
 
 export type ScalePreset = 'full-80' | 'standard-65' | 'scenery-45';
 
@@ -18,11 +15,12 @@ export interface ShotArchetype {
   pitchToleranceDeg: number;
   targetRollDeg: number;
   rollToleranceDeg: number;
-  heightHint: 'Waist / Stomach Height' | 'Chest / Eye Height' | 'Table / Seated Level' | 'High / Above Head';
+  heightHint: 'Waist / Stomach Height' | 'Chest / Eye Height' | 'Table / Seated Level' | 'Eye Level (Level Horizon)';
   lensPreference: '1x' | '2x' | '0.5x';
   headroomPercentage: number;
   feetMarginPercentage: number;
-  defaultScale: number; // e.g. 0.75
+  defaultScale: number;
+  sampleImageUrl: string;
   proTip: string;
 }
 
@@ -48,14 +46,14 @@ export type DirectionalBadgeType =
 export type SeverityTier = 'perfect' | 'minor' | 'moderate' | 'severe';
 
 export interface CompositionFeedback {
-  score: number; // 0.0 to 1.0
+  score: number;
   isLocked: boolean;
   isLevel: boolean;
   severity: SeverityTier;
   primaryBadge: DirectionalBadgeType;
   primaryBadgeText: string;
   detailedTips: string[];
-  autoSnapProgress: number; // 0.0 to 1.0
+  autoSnapProgress: number;
 }
 
 export interface CapturedPhoto {
@@ -67,4 +65,12 @@ export interface CapturedPhoto {
   archetypeId: ShotArchetypeId;
   alignmentScore: number;
   isFavorited?: boolean;
+}
+
+export interface SimulationState {
+  enabled: boolean;
+  simulatedPitchDeg: number;
+  simulatedRollDeg: number;
+  simulatedScale: number;
+  activeSampleIndex: number;
 }
