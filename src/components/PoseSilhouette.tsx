@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
-import Svg, { Circle, Line, Rect, Path, G, Text as SvgText } from 'react-native-svg';
+import Svg, { Circle, Line, Rect, Path, G } from 'react-native-svg';
 import { SeverityTier, ShotArchetype } from '../types/camera';
 
 interface PoseSilhouetteProps {
@@ -8,7 +8,7 @@ interface PoseSilhouetteProps {
   isLocked: boolean;
   score: number;
   severity: SeverityTier;
-  scaleMultiplier: number; // 0.45 to 1.0
+  scaleMultiplier: number;
 }
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -20,7 +20,6 @@ export const PoseSilhouette: React.FC<PoseSilhouetteProps> = ({
   severity,
   scaleMultiplier = 1.0,
 }) => {
-  // When perfect, silhouette fades to transparent/ghost level so he can see her expression
   const opacity =
     severity === 'perfect'
       ? 0.15
@@ -45,7 +44,6 @@ export const PoseSilhouette: React.FC<PoseSilhouetteProps> = ({
   const h = SCREEN_HEIGHT * 0.75;
   const cx = w / 2;
 
-  // Scale factor anchored to bottom center
   const s = Math.max(0.4, Math.min(1.2, scaleMultiplier));
 
   return (
@@ -151,60 +149,6 @@ export const PoseSilhouette: React.FC<PoseSilhouetteProps> = ({
               `}
               stroke={strokeColor}
               strokeWidth={strokeWidth}
-              fill="transparent"
-            />
-          </G>
-        )}
-
-        {/* Cafe / Table Sitting Guides */}
-        {archetype.id === 'cafe-sitting' && (
-          <G opacity={opacity}>
-            <Circle
-              cx={cx}
-              cy={h * 0.28}
-              r={w * 0.13 * s}
-              stroke={strokeColor}
-              strokeWidth={strokeWidth}
-              fill="transparent"
-            />
-            <Path
-              d={`
-                M ${cx - w * 0.22 * s} ${h * 0.55}
-                L ${cx + w * 0.22 * s} ${h * 0.55}
-              `}
-              stroke={strokeColor}
-              strokeWidth={strokeWidth}
-            />
-            <Line
-              x1={w * 0.05}
-              y1={h * 0.58}
-              x2={w * 0.95}
-              y2={h * 0.58}
-              stroke={strokeColor}
-              strokeWidth={2}
-            />
-          </G>
-        )}
-
-        {/* 0.5x High-Angle Y2K Guide */}
-        {archetype.id === 'y2k-high' && (
-          <G opacity={opacity}>
-            {/* Top-down circular perspective */}
-            <Circle
-              cx={cx}
-              cy={h * 0.35}
-              r={w * 0.22 * s}
-              stroke={strokeColor}
-              strokeWidth={strokeWidth}
-              fill="transparent"
-            />
-            <Circle
-              cx={cx}
-              cy={h * 0.65}
-              r={w * 0.12 * s}
-              stroke={strokeColor}
-              strokeWidth={strokeWidth}
-              strokeDasharray="4, 4"
               fill="transparent"
             />
           </G>

@@ -21,56 +21,52 @@ export const HUDOverlay: React.FC<HUDOverlayProps> = ({
   autoSnapEnabled,
   scaleMultiplier,
 }) => {
-  const { score, isLocked, severity, primaryBadgeText, autoSnapProgress } = feedback;
+  const { score, isLocked, severity, primaryBadgeText, detailedTips, autoSnapProgress } = feedback;
   const scorePct = Math.round(score * 100);
 
   const isPerfect = severity === 'perfect';
   const isSevere = severity === 'severe';
   const isMinor = severity === 'minor';
 
-  const statusColor = isPerfect
-    ? '#22C55E'
-    : isMinor
-    ? '#10B981'
-    : isSevere
-    ? '#EF4444'
-    : '#FBBF24';
-
-  const badgeBg = isPerfect
-    ? 'rgba(34, 197, 94, 0.9)'
-    : isSevere
-    ? 'rgba(239, 68, 68, 0.95)'
-    : 'rgba(0, 0, 0, 0.75)';
-
   return (
     <View style={styles.container} pointerEvents="none">
       {/* Subtle Glowing Framing Border on Target Lock */}
       {isPerfect && <View style={styles.perfectBorder} />}
 
-      {/* Top Status Header - Only visible when adjusting, minimal when perfect */}
-      <View style={[styles.topHeader, isPerfect ? styles.topHeaderMinimal : null]}>
-        {!isPerfect ? (
-          <>
-            <View style={styles.modeChip}>
-              <Text style={styles.modeText}>{archetype.badge}</Text>
-            </View>
-
-            <View style={styles.heightPill}>
-              <Text style={styles.heightText}>📍 {archetype.heightHint}</Text>
-            </View>
-
-            <View style={[styles.scoreChip, { borderColor: statusColor }]}>
-              <View style={[styles.scoreDot, { backgroundColor: statusColor }]} />
-              <Text style={[styles.scoreText, { color: statusColor }]}>{scorePct}%</Text>
-            </View>
-          </>
-        ) : (
-          <View style={styles.lockedPill}>
-            <View style={styles.lockedDot} />
-            <Text style={styles.lockedText}>LOCKED</Text>
+      {/* Top Header - Hidden when perfect */}
+      {!isPerfect && (
+        <View style={styles.topHeader}>
+          <View style={styles.modeChip}>
+            <Text style={styles.modeText}>{archetype.badge}</Text>
           </View>
-        )}
-      </View>
+
+          <View style={styles.heightPill}>
+            <Text style={styles.heightText}>📍 {archetype.heightHint}</Text>
+          </View>
+
+          <View
+            style={[
+              styles.scoreChip,
+              { borderColor: isSevere ? '#EF4444' : isMinor ? '#10B981' : '#FBBF24' },
+            ]}
+          >
+            <View
+              style={[
+                styles.scoreDot,
+                { backgroundColor: isSevere ? '#EF4444' : isMinor ? '#10B981' : '#FBBF24' },
+              ]}
+            />
+            <Text
+              style={[
+                styles.scoreText,
+                { color: isSevere ? '#EF4444' : isMinor ? '#10B981' : '#FBBF24' },
+              ]}
+            >
+              {scorePct}%
+            </Text>
+          </View>
+        </View>
+      )}
 
       {/* Dynamic Pose Silhouette */}
       <PoseSilhouette
@@ -89,26 +85,40 @@ export const HUDOverlay: React.FC<HUDOverlayProps> = ({
         severity={severity}
       />
 
-      {/* Directional Guidance Badge */}
+      {/* Center Guidance Area */}
       <View style={styles.badgeContainer}>
-        {(!isPerfect || autoSnapProgress > 0) && (
-          <View
-            style={[
-              styles.directionalBadge,
-              { backgroundColor: badgeBg, borderColor: statusColor },
-              isSevere ? styles.badgeSevere : null,
-            ]}
-          >
-            <Text
-              style={[
-                styles.directionalText,
-                isSevere ? styles.textSevere : null,
-              ]}
-            >
-              {primaryBadgeText}
-            </Text>
+        {/* SEVERE: Show Enumerated 'Why This Is Bad' Card */}
+        {isSevere && detailedTips.length > 0 && (
+          <View style={styles.severeCard}>
+            <Text style={styles.severeCardHeading}>WHY THIS PICTURE IS BAD:</Text>
+            {detailedTips.map((tip, idx) => (
+              <Text key={idx} style={styles.severeCardBullet}>
+                ❌ {idx + 1}. {tip}
+              </Text>
+            ))}
           </View>
         )}
+
+        {/* Action Badge */}
+        <View
+          style={[
+            styles.directionalBadge,
+            isPerfect
+              ? styles.badgePerfect
+              : isSevere
+              ? styles.badgeSevere
+              : styles.badgeModerate,
+          ]}
+        >
+          <Text
+            style={[
+              styles.directionalText,
+              isPerfect ? styles.textPerfect : isSevere ? styles.textSevere : null,
+            ]}
+          >
+            {primaryBadgeText}
+          </Text>
+        </View>
 
         {/* Auto-Snap Progress Bar (when locked) */}
         {autoSnapEnabled && autoSnapProgress > 0 && (
@@ -137,9 +147,9 @@ const styles = StyleSheet.create({
   },
   perfectBorder: {
     ...StyleSheet.absoluteFillObject,
-    borderWidth: 3,
+    borderWidth: 3.5,
     borderColor: '#22C55E',
-    opacity: 0.8,
+    opacity: 0.85,
     borderRadius: 8,
   },
   topHeader: {
@@ -149,9 +159,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: Platform.OS === 'ios' ? 56 : 24,
     zIndex: 10,
-  },
-  topHeaderMinimal: {
-    justifyContent: 'center',
   },
   modeChip: {
     paddingHorizontal: 10,
@@ -200,39 +207,39 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     fontVariant: ['tabular-nums'],
   },
-  lockedPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: 'rgba(34, 197, 94, 0.85)',
-    borderWidth: 1,
-    borderColor: '#FFF',
-  },
-  lockedDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#FFF',
-  },
-  lockedText: {
-    color: '#FFF',
-    fontSize: 12,
-    fontWeight: '900',
-    letterSpacing: 1,
-  },
   badgeContainer: {
     alignItems: 'center',
     marginBottom: '18%',
     paddingHorizontal: 20,
     zIndex: 10,
   },
+  severeCard: {
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.88)',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#EF4444',
+    padding: 14,
+    marginBottom: 12,
+  },
+  severeCardHeading: {
+    color: '#EF4444',
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 0.8,
+    marginBottom: 6,
+  },
+  severeCardBullet: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '600',
+    lineHeight: 18,
+    marginTop: 3,
+  },
   directionalBadge: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 24,
+    paddingHorizontal: 22,
+    paddingVertical: 12,
+    borderRadius: 26,
     borderWidth: 1.5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -240,11 +247,23 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 6,
   },
+  badgeModerate: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    borderColor: '#FBBF24',
+  },
   badgeSevere: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderWidth: 2,
+    backgroundColor: '#EF4444',
     borderColor: '#FFF',
+    borderWidth: 2,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+  },
+  badgePerfect: {
+    backgroundColor: '#22C55E',
+    borderColor: '#FFF',
+    borderWidth: 2,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
   },
   directionalText: {
     color: '#FFF',
@@ -256,6 +275,12 @@ const styles = StyleSheet.create({
   textSevere: {
     fontSize: 15,
     fontWeight: '900',
+  },
+  textPerfect: {
+    color: '#000',
+    fontSize: 15,
+    fontWeight: '900',
+    letterSpacing: 0.8,
   },
   autoSnapBarContainer: {
     width: 160,
