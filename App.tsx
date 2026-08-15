@@ -7,11 +7,10 @@ import {
   SafeAreaView,
   StatusBar,
   Dimensions,
-  Platform,
 } from 'react-native';
 import { CameraView, CameraType, FlashMode, useCameraPermissions } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
-import { Camera as CameraIcon, ShieldAlert } from 'lucide-react-native';
+import { ShieldAlert } from 'lucide-react-native';
 
 import { ShotArchetype, CapturedPhoto } from './src/types/camera';
 import { DEFAULT_ARCHETYPE } from './src/constants/archetypes';
@@ -33,6 +32,7 @@ export default function App() {
   const [showGrid, setShowGrid] = useState(true);
   const [autoSnapEnabled, setAutoSnapEnabled] = useState(true);
   const [archetype, setArchetype] = useState<ShotArchetype>(DEFAULT_ARCHETYPE);
+  const [scaleMultiplier, setScaleMultiplier] = useState<number>(DEFAULT_ARCHETYPE.defaultScale);
 
   const [capturedPhotos, setCapturedPhotos] = useState<CapturedPhoto[]>([]);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
@@ -125,15 +125,18 @@ export default function App() {
           feedback={feedback}
           showGrid={showGrid}
           autoSnapEnabled={autoSnapEnabled}
+          scaleMultiplier={scaleMultiplier}
         />
       </CameraView>
 
       {/* Bottom Interface Controls */}
       <View style={styles.bottomInterface}>
-        {/* Shot Archetype Selector Carousel */}
+        {/* Shot Archetype Selector & Scale Controls */}
         <ShotTypeSelector
           selectedArchetype={archetype}
           onSelectArchetype={setArchetype}
+          scaleMultiplier={scaleMultiplier}
+          onSelectScale={setScaleMultiplier}
         />
 
         {/* Primary Controls & Shutter Bar */}

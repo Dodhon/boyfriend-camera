@@ -10,6 +10,7 @@ interface HUDOverlayProps {
   feedback: CompositionFeedback;
   showGrid: boolean;
   autoSnapEnabled: boolean;
+  scaleMultiplier: number;
 }
 
 export const HUDOverlay: React.FC<HUDOverlayProps> = ({
@@ -18,47 +19,96 @@ export const HUDOverlay: React.FC<HUDOverlayProps> = ({
   feedback,
   showGrid,
   autoSnapEnabled,
+  scaleMultiplier,
 }) => {
-  const { score, isLocked, primaryBadgeText, autoSnapProgress } = feedback;
+  const { score, isLocked, severity, primaryBadgeText, autoSnapProgress } = feedback;
   const scorePct = Math.round(score * 100);
 
-  const isGreen = isLocked;
-  const isYellow = score > 0.75;
-  const statusColor = isGreen ? '#22C55E' : isYellow ? '#FBBF24' : '#EF4444';
-  const badgeBg = isGreen ? 'rgba(34, 197, 94, 0.85)' : 'rgba(0, 0, 0, 0.75)';
+  const isPerfect = severity === 'perfect';
+  const isSevere = severity === 'severe';
+  const isMinor = severity === 'minor';
+
+  const statusColor = isPerfect
+    ? '#22C55E'
+    : isMinor
+    ? '#10B981'
+    : isSevere
+    ? '#EF4444'
+    : '#FBBF24';
+
+  const badgeBg = isPerfect
+    ? 'rgba(34, 197, 94, 0.9)'
+    : isSevere
+    ? 'rgba(239, 68, 68, 0.95)'
+    : 'rgba(0, 0, 0, 0.75)';
 
   return (
     <View style={styles.container} pointerEvents="none">
-      {/* Top Status Header */}
-      <View style={styles.topHeader}>
-        {/* Left: Mode Chip */}
-        <View style={styles.modeChip}>
-          <Text style={styles.modeText}>{archetype.badge}</Text>
-        </View>
+      {/* Subtle Glowing Framing Border on Target Lock */}
+      {isPerfect && <View style={styles.perfectBorder} />}
 
-        {/* Center: Height Guidance Pill */}
-        <View style={styles.heightPill}>
-          <Text style={styles.heightText}>📍 {archetype.heightHint}</Text>
-        </View>
+      {/* Top Status Header - Only visible when adjusting, minimal when perfect */}
+      <View style={[styles.topHeader, isPerfect ? styles.topHeaderMinimal : null]}>
+        {!isPerfect ? (
+          <>
+            <View style={styles.modeChip}>
+              <Text style={styles.modeText}>{archetype.badge}</Text>
+            </View>
 
-        {/* Right: Alignment Meter */}
-        <View style={[styles.scoreChip, { borderColor: statusColor }]}>
-          <View style={[styles.scoreDot, { backgroundColor: statusColor }]} />
-          <Text style={[styles.scoreText, { color: statusColor }]}>{scorePct}%</Text>
-        </View>
+            <View style={styles.heightPill}>
+              <Text style={styles.heightText}>📍 {archetype.heightHint}</Text>
+            </View>
+
+            <View style={[styles.scoreChip, { borderColor: statusColor }]}>
+              <View style={[styles.scoreDot, { backgroundColor: statusColor }]} />
+              <Text style={[styles.scoreText, { color: statusColor }]}>{scorePct}%</Text>
+            </View>
+          </>
+        ) : (
+          <View style={styles.lockedPill}>
+            <View style={styles.lockedDot} />
+            <Text style={styles.lockedText}>LOCKED</Text>
+          </View>
+        )}
       </View>
 
-      {/* Silhouette Guides */}
-      <PoseSilhouette archetype={archetype} isLocked={isLocked} score={score} />
+      {/* Dynamic Pose Silhouette */}
+      <PoseSilhouette
+        archetype={archetype}
+        isLocked={isLocked}
+        score={score}
+        severity={severity}
+        scaleMultiplier={scaleMultiplier}
+      />
 
-      {/* Cockpit Level Horizon Bar */}
-      <LevelIndicator attitude={attitude} isLocked={isLocked} score={score} />
+      {/* Cockpit Level Horizon Bar (Fades out when perfect) */}
+      <LevelIndicator
+        attitude={attitude}
+        isLocked={isLocked}
+        score={score}
+        severity={severity}
+      />
 
-      {/* Floating Center-Bottom Directional Guidance Badge */}
+      {/* Directional Guidance Badge */}
       <View style={styles.badgeContainer}>
-        <View style={[styles.directionalBadge, { backgroundColor: badgeBg, borderColor: statusColor }]}>
-          <Text style={styles.directionalText}>{primaryBadgeText}</Text>
-        </View>
+        {(!isPerfect || autoSnapProgress > 0) && (
+          <View
+            style={[
+              styles.directionalBadge,
+              { backgroundColor: badgeBg, borderColor: statusColor },
+              isSevere ? styles.badgeSevere : null,
+            ]}
+          >
+            <Text
+              style={[
+                styles.directionalText,
+                isSevere ? styles.textSevere : null,
+              ]}
+            >
+              {primaryBadgeText}
+            </Text>
+          </View>
+        )}
 
         {/* Auto-Snap Progress Bar (when locked) */}
         {autoSnapEnabled && autoSnapProgress > 0 && (
@@ -85,6 +135,13 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'space-between',
   },
+  perfectBorder: {
+    ...StyleSheet.absoluteFillObject,
+    borderWidth: 3,
+    borderColor: '#22C55E',
+    opacity: 0.8,
+    borderRadius: 8,
+  },
   topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -92,6 +149,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: Platform.OS === 'ios' ? 56 : 24,
     zIndex: 10,
+  },
+  topHeaderMinimal: {
+    justifyContent: 'center',
   },
   modeChip: {
     paddingHorizontal: 10,
@@ -140,6 +200,29 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     fontVariant: ['tabular-nums'],
   },
+  lockedPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: 'rgba(34, 197, 94, 0.85)',
+    borderWidth: 1,
+    borderColor: '#FFF',
+  },
+  lockedDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#FFF',
+  },
+  lockedText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 1,
+  },
   badgeContainer: {
     alignItems: 'center',
     marginBottom: '18%',
@@ -157,12 +240,22 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 6,
   },
+  badgeSevere: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderWidth: 2,
+    borderColor: '#FFF',
+  },
   directionalText: {
     color: '#FFF',
     fontSize: 14,
     fontWeight: '800',
     letterSpacing: 0.6,
     textAlign: 'center',
+  },
+  textSevere: {
+    fontSize: 15,
+    fontWeight: '900',
   },
   autoSnapBarContainer: {
     width: 160,
