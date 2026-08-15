@@ -25,7 +25,6 @@ export const PoseSilhouette: React.FC<PoseSilhouetteProps> = ({
   const strokeWidth = isLocked ? 2.5 : 1.5;
   const opacity = isLocked ? 0.9 : 0.6;
 
-  // Viewport dimensions for camera preview
   const w = SCREEN_WIDTH;
   const h = SCREEN_HEIGHT * 0.75;
   const cx = w / 2;
@@ -240,11 +239,19 @@ export const PoseSilhouette: React.FC<PoseSilhouetteProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFill,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
   svg: {
-    ...StyleSheet.absoluteFill,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });

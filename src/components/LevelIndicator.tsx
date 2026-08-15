@@ -15,9 +15,7 @@ export const LevelIndicator: React.FC<LevelIndicatorProps> = ({
 }) => {
   const { rollDeg, pitchDeg, pitchErrorDeg } = attitude;
 
-  // Clamp roll rotation to ±45° for visual stability
   const clampedRoll = Math.max(-45, Math.min(45, rollDeg));
-  // Vertical offset based on pitch error (-40px to +40px)
   const verticalOffset = Math.max(-30, Math.min(30, -pitchErrorDeg * 4));
 
   const isNear = score > 0.75;
@@ -75,7 +73,11 @@ export const LevelIndicator: React.FC<LevelIndicatorProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFill,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
   },
